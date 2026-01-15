@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern App Store</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5; /* Modern Indigo */
+            --primary-hover: #4338ca;
+            --secondary: #10b981; /* Emerald Green */
+            --accent: #f59e0b; /* Amber */
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        body {
+            background: var(--light-bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: var(--dark-bg);
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .modal-content,
+        body.dark-mode .custom-toast {
+            background: #1e293b;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
+        body.dark-mode .form-control {
+            background: #334155;
+            border-color: #475569;
+            color: white;
+        }
+
+        body.dark-mode .category-pill {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+
+        body.dark-mode .app-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        body.dark-mode .text-muted {
+            color: #94a3b8;
+        }
+
+        /* Auth View Styles */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 100%);
+            padding: 20px;
+        }
+
+        body.dark-mode .auth-wrapper {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .auth-card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        body.dark-mode .auth-card {
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .auth-header {
+            padding: 40px 30px 20px;
+            text-align: center;
+            background: transparent;
+        }
+
+        .auth-header h2 {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .custom-tabs {
+            display: flex;
+            padding: 0 30px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .custom-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 600;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .custom-tab.active {
+            color: var(--primary);
+        }
+
+        .custom-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .form-floating input:focus ~ label,
+        .form-floating input:not(:placeholder-shown) ~ label {
+            color: var(--primary);
+        }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            padding: 12px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-main:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-main:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Store View Styles */
+        .store-header {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+        }
+
+        body.dark-mode .store-header {
+            background: rgba(30, 41, 59, 0.8);
+            border-bottom: 1px solid #334155;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 500px;
+        }
+
+        .search-input {
+            border-radius: 50px;
+            padding-left: 45px;
+            border: 2px solid var(--border);
+            background: white;
+            transition: 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .category-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 20px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-pill {
+            background: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .category-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .category-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        /* App Card Design */
+        .app-card {
+            border-radius: 20px;
+            border: none;
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .app-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: #f1f5f9;
+        }
+
+        .app-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rating-stars {
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        /* User Profile */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: 0.3s;
+            z-index: 1000;
+            border: 1px solid var(--border);
+        }
+        
+        body.dark-mode .user-menu {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .user-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            background: var(--light-bg);
+        }
+        
+        body.dark-mode .menu-item:hover {
+            background: #334155;
+        }
+
+        .menu-item.danger {
+            color: var(--danger);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 30px;
+        }
+        
+        body.dark-mode .modal-header {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .screenshot-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+        }
+
+        .screenshot-img {
+            border-radius: 12px;
+            width: 200px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .screenshot-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Utilities */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-bottom-color: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .custom-toast {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 300px;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            border: none;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* Feedback for password match */
+        .password-feedback {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+        .password-feedback.invalid {
+            color: var(--danger);
+            display: block;
+        }
+        .password-feedback.valid {
+            color: var(--secondary);
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification Area -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Auth View -->
+    <div id="authView" class="auth-wrapper">
+        <div class="card auth-card">
+            <div class="auth-header">
+                <div class="brand-logo justify-content-center mb-2">
+                    <i class="fas fa-cube fa-lg"></i>
+                    <span>AppStore</span>
+                </div>
+                <p class="text-muted">Welcome back! Please login.</p>
+            </div>
+            
+            <div class="custom-tabs">
+                <div class="custom-tab active" data-target="loginTab">Login</div>
+                <div class="custom-tab" data-target="signupTab">Sign Up</div>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Login Form -->
+                <form id="loginForm">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" required>
+                        <label for="loginEmail">Email Address</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
+                        <label for="loginPassword">Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-main w-100 mb-3">Login Now</button>
+                    <div id="loginError" class="text-danger text-center small"></div>
+                </form>
+
+                <!-- Signup Form (Hidden by default) -->
+                <form id="signupForm" class="d-none">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="signupName" placeholder="Full Name" required>
+                        <label for="signupName">Full Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="signupEmail" placeholder="name@example.com" required>
+                        <label for="signupEmail">Email Address</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="signupPassword" placeholder="Password" required minlength="6">
+                        <label for="signupPassword">Password</label>
+                    </div>
+                    <!-- পাসওয়ার্ড কনফার্মেশন ফিল্ড যোগ করা হয়েছে -->
+                    <div class="form-floating mb-2">
+                        <input type="password" class="form-control" id="signupConfirmPassword" placeholder="Confirm Password" required>
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                    </div>
+                    <div id="passwordFeedback" class="password-feedback"></div>
+                    
+                    <div class="form-check mb-4 mt-3">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label small text-muted" for="agreeTerms">
+                            I agree to the Terms & Conditions
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-main w-100 mb-3" id="signupBtn" disabled>Create Account</button>
+                    <div id="signupError" class="text-danger text-center small"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Store View (Hidden by default) -->
+    <div id="storeView" class="d-none">
+        <div class="store-header">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="#" class="brand-logo">
+                        <i class="fas fa-cube"></i> AppStore
+                    </a>
+                    
+                    <div class="d-none d-md-flex search-container mx-4">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control search-input" id="searchInput" placeholder="Search for apps, games...">
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="user-profile position-relative">
+                            <div class="user-avatar" id="userAvatar">U</div>
+                            <div class="user-menu" id="userMenu">
+                                <div class="px-3 py-2 border-bottom mb-2">
+                                    <strong class="d-block" id="menuUserName">User Name</strong>
+                                    <small class="text-muted" id="menuUserEmail">email@example.com</small>
+                                </div>
+                                <div class="menu-item"><i class="fas fa-user-circle text-muted"></i> Profile</div>
+                                <div class="menu-item"><i class="fas fa-cog text-muted"></i> Settings</div>
+                                <div class="menu-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Search (Visible only on small screens) -->
+                <div class="d-md-none mt-3">
+                    <div class="search-container w-100">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control search-input w-100" id="mobileSearchInput" placeholder="Search apps...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container py-4">
+            <!-- Categories -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Categories</h5>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" id="filterBtn">
+                    <i class="fas fa-sliders-h me-1"></i> Filters
+                </button>
+            </div>
+            <div class="category-scroll" id="categoryNav">
+                <!-- Categories will be injected here via JS -->
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="text-center py-5" id="loadingIndicator">
+                <span class="loader"></span>
+                <p class="text-muted mt-3">Loading amazing apps...</p>
+            </div>
+            
+            <!-- Apps Grid -->
+            <div id="appsGrid" class="row g-4 mt-1">
+                <!-- Apps will be injected here via JS -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- App Detail Modal -->
+    <div class="modal fade" id="appDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <img id="modalAppImage" src="" alt="App Icon" class="rounded" width="60" height="60" style="object-fit: cover;">
+                        <div>
+                            <h4 class="mb-0 fw-bold" id="modalAppName">App Name</h4>
+                            <p class="text-muted small mb-0" id="modalDeveloper">Developer</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 border-end">
+                            <div class="text-center mb-4">
+                                <button class="btn btn-main w-100 mb-2 shadow-sm" id="modalDownloadBtn">
+                                    <i class="fas fa-download me-2"></i> Install
+                                </button>
+                                <div class="d-flex justify-content-center gap-4 text-center small text-muted">
+                                    <div>
+                                        <strong class="d-block text-dark" id="modalRating">4.5</strong>
+                                        <i class="fas fa-star text-warning"></i> Rating
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark" id="modalDownloads">10K</strong>
+                                        <i class="fas fa-download"></i> Downloads
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark" id="modalSize">15MB</strong>
+                                        <i class="fas fa-hdd"></i> Size
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <span class="badge bg-light text-dark border" id="modalCategory">Category</span>
+                                <span class="badge bg-light text-dark border ms-2" id="modalVersion">v1.0</span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted fw-bold">Updated</label>
+                                <div class="fw-medium" id="modalUpdated">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 ps-md-4">
+                            <h5 class="fw-bold mb-3">About this app</h5>
+                            <p class="text-muted" id="modalDescription">Description goes here...</p>
+                            
+                            <h5 class="fw-bold mb-3">Screenshots</h5>
+                            <div class="screenshot-container" id="modalScreenshots">
+                                <!-- Screenshots injected here -->
+                            </div>
+                            
+                            <h5 class="fw-bold mb-3 mt-4">Reviews</h5>
+                            <div id="modalReviews" class="vstack gap-3">
+                                <!-- Reviews injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Modal -->
+    <div class="modal fade" id="filterModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Filter Apps</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Category</label>
+                        <select class="form-select rounded-pill" id="filterCategory"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Minimum Rating</label>
+                        <select class="form-select rounded-pill" id="filterRating">
+                            <option value="0">Any Rating</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="4.5">4.5+ Stars</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Sort By</label>
+                        <select class="form-select rounded-pill" id="filterSort">
+                            <option value="name">Name (A-Z)</option>
+                            <option value="rating">Top Rated</option>
+                            <option value="downloads">Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Reset</button>
+                    <button class="btn btn-main rounded-pill px-4" id="applyFilterBtn">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIu2HpivQSqMlbkaMF2CMNxasutATLvQ4",
+            authDomain: "islam-2bf3e.firebaseapp.com",
+            databaseURL: "https://islam-2bf3e-default-rtdb.firebaseio.com",
+            projectId: "islam-2bf3e",
+            storageBucket: "islam-2bf3e.firebasestorage.app",
+            messagingSenderId: "51761454694",
+            appId: "1:51761454694:web:14d6693c37db13ec2617a7",
+            measurementId: "G-XXQ1RSDWS3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const appsCollection = db.collection('apps');
+
+        // Global State
+        let apps = [];
+        let filters = {
+            category: 'all',
+            rating: 0,
+            sortBy: 'name',
+            search: ''
+        };
+        let appDetailModal, filterModal;
+
+        // DOM Elements
+        const authView = document.getElementById('authView');
+        const storeView = document.getElementById('storeView');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const passwordFeedback = document.getElementById('passwordFeedback');
+        const signupBtn = document.getElementById('signupBtn');
+        const appsGrid = document.getElementById('appsGrid');
+        const categoryNav = document.getElementById('categoryNav');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const toastContainer = document.getElementById('toastContainer');
+        const userAvatar = document.getElementById('userAvatar');
+        const userMenu = document.getElementById('userMenu');
+
+        // === UI Interactions ===
+
+        // Tab Switching Logic
+        document.querySelectorAll('.custom-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update tabs
+                document.querySelectorAll('.custom-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update forms
+                const targetId = tab.dataset.target;
+                if (targetId === 'loginTab') {
+                    loginForm.classList.remove('d-none');
+                    signupForm.classList.add('d-none');
+                } else {
+                    loginForm.classList.add('d-none');
+                    signupForm.classList.remove('d-none');
+                }
+                
+                // Clear errors
+                document.getElementById('loginError').textContent = '';
+                document.getElementById('signupError').textContent = '';
+            });
+        });
+
+        // Dark Mode Logic
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // User Menu Toggle
+        userAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            userMenu.classList.remove('show');
+        });
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast';
+            const icon = type === 'success' ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger';
+            const borderClass = type === 'success' ? 'border-success' : 'border-danger';
+            
+            toast.style.borderLeft = `4px solid ${type === 'success' ? 'var(--secondary)' : 'var(--danger)'}`;
+            toast.innerHTML = `
+                <i class="fas ${icon} fa-lg"></i>
+                <div class="fw-medium small">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // === Auth Logic ===
+
+        // Password Match Validation for Signup
+        const signupPassword = document.getElementById('signupPassword');
+        const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+
+        function checkPasswordMatch() {
+            const p1 = signupPassword.value;
+            const p2 = signupConfirmPassword.value;
+            
+            if (p2.length === 0) {
+                passwordFeedback.className = 'password-feedback';
+                signupBtn.disabled = true;
+                return;
+            }
+            
+            if (p1 === p2) {
+                passwordFeedback.textContent = 'Passwords match!';
+                passwordFeedback.className = 'password-feedback valid';
+                signupConfirmPassword.style.borderColor = 'var(--secondary)';
+                signupBtn.disabled = false;
+            } else {
+                passwordFeedback.textContent = 'Passwords do not match.';
+                passwordFeedback.className = 'password-feedback invalid';
+                signupConfirmPassword.style.borderColor = 'var(--danger)';
+                signupBtn.disabled = true;
+            }
+        }
+
+        signupPassword.addEventListener('input', checkPasswordMatch);
+        signupConfirmPassword.addEventListener('input', checkPasswordMatch);
+
+        // Login Handler
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = loginForm.querySelector('button');
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Logging in...';
+            btn.disabled = true;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showToast('Welcome back!');
+                    loginForm.reset();
+                })
+                .catch((error) => {
+                    document.getElementById('loginError').textContent = error.message;
+                    showToast('Login failed', 'error');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+        });
+
+        // Signup Handler
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = signupPassword.value;
+            const btn = signupBtn;
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating...';
+            btn.disabled = true;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update user profile
+                    return userCredential.user.updateProfile({ displayName: name });
+                })
+                .then(() => {
+                    showToast('Account created successfully!');
+                    signupForm.reset();
+                    passwordFeedback.className = 'password-feedback';
+                    signupConfirmPassword.style.borderColor = '';
+                    // Switch back to login view automatically or wait for auth state change
+                })
+                .catch((error) => {
+                    document.getElementById('signupError').textContent = error.message;
+                    showToast('Signup failed', 'error');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    // Re-validate to set disabled state correctly
+                    checkPasswordMatch();
+                });
+        });
+
+        // Logout Handler
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                showToast('Logged out successfully');
+            });
+        });
+
+        // Auth State Observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                authView.classList.add('d-none');
+                storeView.classList.remove('d-none');
+                
+                const name = user.displayName || user.email.split('@')[0];
+                const initial = name.charAt(0).toUpperCase();
+                
+                userAvatar.textContent = initial;
+                document.getElementById('menuUserName').textContent = name;
+                document.getElementById('menuUserEmail').textContent = user.email;
+                
+                loadApps();
+            } else {
+                authView.classList.remove('d-none');
+                storeView.classList.add('d-none');
+            }
+        });
+
+        // === Data & App Logic ===
+
+        // Helper: Format Numbers
+        function formatNumber(num) {
+            if (!num) return '0';
+            num = parseInt(num);
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // Helper: Generate Stars
+        function getStarHTML(rating) {
+            let html = '';
+            const r = Math.round(rating * 2) / 2; // Round to nearest 0.5
+            for (let i = 1; i <= 5; i++) {
+                if (i <= r) html += '<i class="fas fa-star"></i>';
+                else if (i - 0.5 === r) html += '<i class="fas fa-star-half-alt"></i>';
+                else html += '<i class="far fa-star"></i>';
+            }
+            return html;
+        }
+
+        function loadApps() {
+            loadingIndicator.classList.remove('d-none');
+            appsGrid.innerHTML = '';
+            
+            appsCollection.get().then((snapshot) => {
+                if (snapshot.empty) {
+                    showToast('No apps found in database', 'error');
+                    loadingIndicator.classList.add('d-none');
+                    return;
+                }
+
+                apps = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        appName: data.appName || 'Unknown App',
+                        developer: data.developer || 'Unknown',
+                        category: (data.category || 'General').toLowerCase().trim(),
+                        appIconUrl: data.appIconUrl,
+                        rating: parseFloat(data.rating) || 0,
+                        downloads: parseInt(data.downloads) || 0,
+                        description: data.description,
+                        downloadUrl: data.downloadUrl,
+                        size: data.size || 'N/A',
+                        version: data.version || '1.0',
+                        screenshots: data.screenshots,
+                        updatedAt: data.updatedAt
+                    };
+                });
+
+                initializeCategories();
+                applyFilters();
+                loadingIndicator.classList.add('d-none');
+            }).catch((err) => {
+                console.error(err);
+                showToast('Error loading apps', 'error');
+                loadingIndicator.classList.add('d-none');
+            });
+        }
+
+        function initializeCategories() {
+            // Extract unique categories
+            const categories = new Set(apps.map(a => a.category));
+            const sortedCats = ['all', ...Array.from(categories).sort()];
+
+            // Build Category Pills
+            categoryNav.innerHTML = sortedCats.map(cat => `
+                <button class="category-pill ${cat === 'all' ? 'active' : ''}" data-cat="${cat}">
+                    ${cat === 'all' ? 'All Apps' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </button>
+            `).join('');
+
+            // Add click listeners
+            categoryNav.querySelectorAll('.category-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    categoryNav.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    filters.category = pill.dataset.cat;
+                    applyFilters();
+                });
+            });
+
+            // Update Filter Modal Dropdown
+            const select = document.getElementById('filterCategory');
+            select.innerHTML = sortedCats.map(cat => 
+                `<option value="${cat}">${cat === 'all' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`
+            ).join('');
+            select.value = 'all';
+        }
+
+        function renderApps(data) {
+            appsGrid.innerHTML = '';
+            
+            if (data.length === 0) {
+                appsGrid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No apps found matching your criteria</h5>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="resetFilters()">Clear Filters</button>
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach(app => {
+                const col = document.createElement('div');
+                col.className = 'col-6 col-sm-4 col-lg-3 col-xl-2';
+                col.innerHTML = `
+                    <div class="app-card p-3" data-id="${app.id}">
+                        <div class="app-icon-wrapper">
+                            <img src="${app.appIconUrl}" class="app-icon" alt="${app.appName}" 
+                                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(app.appName)}&background=random&color=fff'">
+                        </div>
+                        <h6 class="fw-bold text-truncate mb-1">${app.appName}</h6>
+                        <p class="text-muted small text-truncate mb-2">${app.developer}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="rating-stars">
+                                ${getStarHTML(app.rating)}
+                                <span class="small text-muted ms-1">${app.rating}</span>
+                            </span>
+                        </div>
+                    </div>
+                `;
+                col.onclick = () => openAppDetail(app);
+                appsGrid.appendChild(col);
+            });
+        }
+
+        function applyFilters() {
+            // Filter
+            let filtered = apps.filter(app => {
+                const matchesCategory = filters.category === 'all' || app.category === filters.category;
+                const matchesRating = app.rating >= filters.rating;
+                const searchLower = filters.search.toLowerCase();
+                const matchesSearch = !searchLower || 
+                                      app.appName.toLowerCase().includes(searchLower) || 
+                                      app.developer.toLowerCase().includes(searchLower);
+                return matchesCategory && matchesRating && matchesSearch;
+            });
+
+            // Sort
+            filtered.sort((a, b) => {
+                if (filters.sortBy === 'rating') return b.rating - a.rating;
+                if (filters.sortBy === 'downloads') return b.downloads - a.downloads;
+                return a.appName.localeCompare(b.appName);
+            });
+
+            renderApps(filtered);
+        }
+
+        function resetFilters() {
+            filters.category = 'all';
+            filters.rating = 0;
+            filters.search = '';
+            filters.sortBy = 'name';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            document.querySelector('.category-pill[data-cat="all"]').classList.add('active');
+            
+            applyFilters();
+        }
+
+        // Search Listeners
+        ['searchInput', 'mobileSearchInput'].forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                filters.search = e.target.value;
+                applyFilters();
+            });
+        });
+
+        // Filter Modal Logic
+        document.getElementById('filterBtn').addEventListener('click', () => {
+            document.getElementById('filterCategory').value = filters.category;
+            document.getElementById('filterRating').value = filters.rating;
+            document.getElementById('filterSort').value = filters.sortBy;
+            filterModal.show();
+        });
+
+        document.getElementById('applyFilterBtn').addEventListener('click', () => {
+            filters.category = document.getElementById('filterCategory').value;
+            filters.rating = parseFloat(document.getElementById('filterRating').value);
+            filters.sortBy = document.getElementById('filterSort').value;
+            
+            // Update UI pills
+            document.querySelectorAll('.category-pill').forEach(p => {
+                p.classList.toggle('active', p.dataset.cat === filters.category);
+            });
+            
+            applyFilters();
+            filterModal.hide();
+        });
+
+        // Modal Detail Logic
+        function openAppDetail(app) {
+            // Set Basic Info
+            document.getElementById('modalAppName').textContent = app.appName;
+            document.getElementById('modalDeveloper').textContent = app.developer;
+            document.getElementById('modalDescription').textContent = app.description || 'No description available for this app.';
+            document.getElementById('modalCategory').textContent = app.category.toUpperCase();
+            document.getElementById('modalVersion').textContent = app.version;
+            document.getElementById('modalSize').textContent = app.size;
+            
+            const date = app.updatedAt ? new Date(app.updatedAt.toDate()).toLocaleDateString() : 'Recently';
+            document.getElementById('modalUpdated').textContent = date;
+            
+            document.getElementById('modalRating').innerHTML = `${getStarHTML(app.rating)} <span class="text-warning ms-1">(${app.rating})</span>`;
+            document.getElementById('modalDownloads').textContent = formatNumber(app.downloads);
+
+            // Icon
+            const img = document.getElementById('modalAppImage');
+            img.src = app.appIconUrl;
+            img.onerror = () => { img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(app.appName)}&background=random&color=fff`; };
+
+            // Screenshots
+            const scContainer = document.getElementById('modalScreenshots');
+            scContainer.innerHTML = '';
+            
+            let screenshots = [];
+            if (Array.isArray(app.screenshots)) screenshots = app.screenshots;
+            else if (typeof app.screenshots === 'string') screenshots = app.screenshots.split(',').map(s => s.trim());
+            
+            // Fallback screenshots if none exist
+            if (!screenshots.length) {
+                screenshots = [
+                    `https://picsum.photos/seed/${app.id}1/300/600`,
+                    `https://picsum.photos/seed/${app.id}2/300/600`
+                ];
+            }
+
+            screenshots.forEach(url => {
+                const div = document.createElement('div');
+                div.innerHTML = `<img src="${url}" class="screenshot-img" onerror="this.style.display='none'">`;
+                scContainer.appendChild(div);
+            });
+
+            // Download Button Logic
+            const dlBtn = document.getElementById('modalDownloadBtn');
+            if (app.downloadUrl && app.downloadUrl.startsWith('http')) {
+                dlBtn.style.display = 'block';
+                dlBtn.onclick = () => window.open(app.downloadUrl, '_blank');
+            } else {
+                dlBtn.style.display = 'none';
+            }
+
+            // Reviews (Static Mockup for now)
+            document.getElementById('modalReviews').innerHTML = `
+                <div class="bg-light p-3 rounded-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>John Doe</strong>
+                        <div class="text-warning small">${getStarHTML(5)}</div>
+                    </div>
+                    <p class="small text-muted mb-0 mt-1">Great app! Very useful and smooth.</p>
+                </div>
+                <div class="bg-light p-3 rounded-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>Sarah Smith</strong>
+                        <div class="text-warning small">${getStarHTML(4)}</div>
+                    </div>
+                    <p class="small text-muted mb-0 mt-1">Good but needs more features.</p>
+                </div>
+            `;
+
+            appDetailModal.show();
+        }
+
+        // Init Modals
+        document.addEventListener('DOMContentLoaded', () => {
+            appDetailModal = new bootstrap.Modal(document.getElementById('appDetailModal'));
+            filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+        });
+
+    </script>
+</body>
